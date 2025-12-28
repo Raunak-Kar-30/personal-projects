@@ -122,7 +122,7 @@ void test_zeros_write_speed(char *disk_path, uint64_t disk_size_free)
 		// Get the current postion of the file pointer to get the size of the file written
 		// If the size of the zeros file has passed 5 GB stop the operation, break the loop
 		
-		// Remove this -- for debug only
+		// Remove this -- for temporary purposes (debugging) only
 		allowed_f_size = 2147483648;
 
 		written_f_size = ftell(file_zeros_disk_fp);
