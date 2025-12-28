@@ -68,26 +68,31 @@ void test_write_speed(char *disk_path)
 	printf("Calulating zeros write speed ...\n");
 
 	// Open the disk_path in write mode
-	FILE *disk_fp = fopen(file_zeros_disk_path, "w");
-	if(disk_fp == NULL)
+	FILE *file_zero_disk_fp = fopen(file_zeros_disk_path, "w");
+	if(file_zero_disk_fp == NULL)
 	{
-		fprintf(stderr, "Error opening file\n");
+		fprintf(stderr, "Error opening file on disk\n");
 		exit(1);
 	}
 
-	// Open the dev/zero file, and the /dev/random file (we need these files to write all zeros and random values to the disk in order to test the speed of the disk.
+	// Open the dev/zero file (we need this file to write all zeros to the disk in order to test the speed of the disk).
 	FILE *zero_fp = fopen("/dev/zero", "r");
-	FILE *random_fp = fopen("/dev/random", "r");
+	if(zero_fp == NULL)
+	{
+		fprintf(stderr, "Error opening /dev/zero\n");
+		exit(1);
+	}
 
 	// Keep reading the /dev/zero file until we reach the end of file, and keep writing to the disk drive
 	char buffer[100];
 	while(fread(buffer, sizeof(*buffer), ARRAY_SIZE(buffer), zero_fp))
 	{
-		fwrite(buffer, sizeof(*buffer), ARRAY_SIZE(buffer), disk_fp);
+		fwrite(buffer, sizeof(*buffer), ARRAY_SIZE(buffer), file_zero_disk_fp);
 	}
 
 	// Close the file pointer and remove the file
 	fclose(zero_fp);
+	fclose(file_zeros_disk_fp);
 	remove(file_zeros_disk_path);
 
 	// Print out the result
@@ -95,9 +100,33 @@ void test_write_speed(char *disk_path)
 	// ----------------------------------------------------------------------
 	// Calculate random data write speed
 	printf("Calculating random write speed ...\n");
+	
+	// Open the disk_path to test_write_random.bin in write mode
+	FILE *file_random_disk_fp = fopen("file_random_disk_path", "w");
+	if(file_random_disk_fp == NULL)
+	{
+		fprintf(stderr, "Error opening file on disk\n");
+		exit(1);
+	}
+
+	// Open the dev/random file (we need this file to write all random values to the disk in order to test the speed of the disk).
+	FILE *random_fp = fopen("/dev/random", "r");
+	if(random_fp == NULL)
+	{
+		fprintf("Error opening /dev/random \n");
+		exit(1);
+	}
+
+	// Keep reading from /dev/random and write the contents to the file on the disk
+	char buffer[100];
+	while(fread(buffer, sizeof(buffer), ARRAY_SIZE(buffer), random_fp))
+	{
+		fwrite(buffer, sizeof(buffer), ARRAY_SIZE(buffer), file_random_disk_fp);
+	}
 
 	// Close all the file pointers and remove the created files
 	fclose(random_fp);
+	fclose(file_random_disk_fp);
 	remove(file_random_disk_path);
 
 	// Print out the result
