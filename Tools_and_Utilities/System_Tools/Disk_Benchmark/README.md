@@ -7,4 +7,4 @@ If someone decides to work with this, kindly verify the code before executing. \
 I am not a professional and can man mistakes.\
 \
 Inspired by : Daniel Hirsch\
-Author : Raunak Kar\
+Author : Raunak Kar
